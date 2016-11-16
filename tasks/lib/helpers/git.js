@@ -117,7 +117,7 @@ function commit(grunt, dir, msgPrefix, msg, done) {
 
 function push(grunt, dir, remote, value, done) {
 
-  exec('git push ' + remote + ' ' + value, {
+  exec('git push -u ' + remote + ' ' + value, {
     grunt: grunt,
     dir: dir,
     done: done

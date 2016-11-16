@@ -42,7 +42,11 @@ module.exports = function (grunt) {
 
     function createTempReleaseBranch() {
       releaseBranchName = options.tempReleaseBranch + '/' + grunt.option('setversion');
-      gitHelper.createBranch(grunt, process.cwd(), releaseBranchName, done);
+      gitHelper.createBranch(grunt, process.cwd(), releaseBranchName, options.push === true ? pushTempReleaseBranch : done);
+    }
+
+    function pushTempReleaseBranch() {
+      gitHelper.push(grunt, process.cwd(), options.pushTo, releaseBranchName, done);
     }
 
     (function start() {

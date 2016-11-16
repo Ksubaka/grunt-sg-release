@@ -38,6 +38,7 @@ var version = require('../tasks/lib/version');
 var dir = path.resolve('tmp');
 var releaseVersion = '1.2.0';
 var releaseBranchName = 'release/v' + releaseVersion;
+var remote = 'origin';
 
 exports.sg_release = {
 
@@ -124,6 +125,26 @@ exports.sg_release = {
 
     gitHelper.createBranch(grunt, dir, releaseBranchName, function () {
       exec('git branch', {
+        grunt: grunt,
+        dir: dir,
+        done: function (stdout) {
+          // output should contain the new branch name
+          test.notEqual(stdout.indexOf(releaseBranchName), -1);
+          test.done();
+        }
+      });
+    });
+  },
+
+
+  // ---
+
+
+  testPushNewBranch: function (test) {
+    test.expect(1);
+
+    gitHelper.push(grunt, dir, remote, releaseBranchName, function () {
+      exec('git branch -r', {
         grunt: grunt,
         dir: dir,
         done: function (stdout) {
@@ -227,6 +248,26 @@ exports.sg_release = {
   // ---
 
 
+  testRemoveRemoteBranch: function (test) {
+    test.expect(1);
+
+    gitHelper.deleteRemoteBranch(grunt, dir, remote, releaseBranchName, function () {
+      exec('git branch -r', {
+        grunt: grunt,
+        dir: dir,
+        done: function (stdout) {
+          // output should contain the new branch name
+          test.equal(stdout.indexOf(releaseBranchName), -1);
+          test.done();
+        }
+      });
+    });
+  },
+
+
+  // ---
+
+
   testCommitDevelopment: function (test) {
     test.expect(1);
 
@@ -250,7 +291,7 @@ exports.sg_release = {
   testPushDevelop: function (test) {
     test.expect(0);
 
-    gitHelper.push(grunt, dir, 'origin', 'develop', function (stdout) {
+    gitHelper.push(grunt, dir, remote, 'develop', function (stdout) {
       // if command have not failed, push was successful
       test.done();
     });
@@ -263,7 +304,7 @@ exports.sg_release = {
   testPushMaster: function (test) {
     test.expect(0);
 
-    gitHelper.push(grunt, dir, 'origin', 'master', function (stdout) {
+    gitHelper.push(grunt, dir, remote, 'master', function (stdout) {
       // if command have not failed, push was successful
       test.done();
     });
@@ -276,7 +317,7 @@ exports.sg_release = {
   testPushTag: function (test) {
     test.expect(0);
 
-    gitHelper.push(grunt, dir, 'origin', 'v1.0.0', function (stdout) {
+    gitHelper.push(grunt, dir, remote, 'v1.0.0', function (stdout) {
       // if command have not failed, push was successful
       test.done();
     });
